@@ -20,4 +20,8 @@ export default class EmployeeService {
         debugger
         await axios.delete('https://localhost:7282/api/Employees/' + id);
     }
+
+    async getDepartments() {
+        return await axios.get('https://localhost:7282/api/Departments');
+    }
 }

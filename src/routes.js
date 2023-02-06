@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import DashBoardComponent from './components/DashBoardComponent.vue'
 import EmployeeComponent from './components/EmployeeComponent.vue'
 import DepartmentComponent from './components/DepartmentComponent.vue'
+import CustomFieldForm from './components/CustomFieldForm.vue'
+
 const routes = [{
         path: '/',
         name: 'DashBoardComponent',
@@ -16,6 +18,11 @@ const routes = [{
         path: '/Employees',
         name: 'Employees',
         component: EmployeeComponent
+    },
+    {
+        path: '/CustomFieldForm',
+        name: 'CustomFieldForm',
+        component: CustomFieldForm
     }
 ]
 

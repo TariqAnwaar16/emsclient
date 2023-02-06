@@ -3,9 +3,11 @@
     <div class="card">
       <Toolbar class="mb-4">
                 <template #start>
-                    <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openModal" />
+                    <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openEmployeeModal" />
                 </template>
       </Toolbar>
+
+<!-- Employee Listing Start -->
         <DataTable stripedRows   :value="employees" :paginator="true" :rows="10"
             paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
             :rowsPerPageOptions="[5,10,15]" responsiveLayout="scroll"
@@ -13,53 +15,88 @@
             <Column v-for="col of columns" :field="col.field" :header="col.header" :key="col.field"></Column>
             <Column   style="min-width:8rem">
                     <template #body="slotProps">
-                        <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="editProduct(slotProps.data)" />
-                        <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" @click="confirmDeleteProduct(slotProps.data)" />
+                        <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="editEmployee(slotProps.data)" />
+                        <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" @click="confirmDeleteEmployee(slotProps.data)" />
                     </template>
             </Column>
         </DataTable>
-        <Dialog v-model:visible="displayModal" :style="{width: '450px'}" header="Product Details" :modal="true" class="p-fluid">
-            <div class="field mb-3">
-                <label for="name" class="mb-1">Employee name</label>
-                <InputText id="name" v-model.trim="Employee.EmployeeName" required="true" autofocus :class="{'p-invalid': submitted && !Employee.EmployeeName}" />
-                <small class="p-error" v-if="submitted && !Employee.EmployeeName">Employee name is required.</small>
-            </div>
+<!-- Employee Listing End -->
 
-            <div class="field mb-3">
-				      <label for="Departments" class="mb-1">Departments</label>
-				      <Dropdown required="true" autofocus :class="{'p-invalid': submitted && !Employee.EmployeeName}"   id="Departments" v-model="Employee.Department" :options="departmentDDL" optionLabel="departmentName" placeholder="Select Department">
-				      </Dropdown>
-              <small class="p-error" v-if="submitted && !Employee.Department">Department is required.</small>
-			      </div>
+<!--Employee Form Start-->
+        <Dialog contentStyle="{'overflow': 'visible'}" v-model:visible="employeeModal" :style="{width: '450px'}" header="Employee Details" :modal="true" class="p-fluid">
+   
+              <Form :validation-schema="schema">
+                <div class="p-fluid grid formgrid">
+                  <div class="field col-12 mb-3">
+                      <label for="name" class="mb-1">Employee name</label>
+                      <InputText id="name" v-model.trim="Employee.employeeName" required="true" autofocus :class="{'p-invalid': submitted && !Employee.EmployeeName}" />
+                     <small class="p-error" v-if="submitted && !Employee.employeeName">Employee name is required.</small>
+                  </div>
 
-            <div class="field mb-3">
-                <label for="icon" class="mb-1">Joining Date</label>
-                <Calendar autofocus :class="{'p-invalid': submitted && !Employee.DateOfJoining}" inputId="icon" v-model="Employee.DateOfJoining" :showIcon="true" />
-                <small class="p-error" v-if="submitted && !Employee.DateOfJoining">Joining Date is required.</small>
-            </div>
-
-            <div class="field ">
-                <label class="mb-3">Gender</label>
-                <div class="formgrid grid">
-                    <div class="field-radiobutton col-6">
-                        <RadioButton id="category1" name="Male" value="Male" v-model="Employee.Gender" />
-                        <label for="category1">Male</label>
+                  <!-- <Field name="Employee.employeeName" v-model=""  v-slot="{ field, errorMessage  }">
+                    <div class="field col-12 mb-3">
+                        <label  for="name" class="mb-1">Employee name</label>
+                        <InputText id="name"  v-bind="field"  required="true" autofocus :class="{'p-invalid': errorMessage}" />
+                        <small class="p-error">Employee name is required.</small>
                     </div>
-                    <div class="field-radiobutton col-6 mt-1">
-                        <RadioButton id="category2" name="Female" value="Female" v-model="Employee.Gender" />
-                        <label for="category2">Female</label>
-                    </div>
-                    <small class="p-error" v-if="submitted && !Employee.Gender">Gender is required.</small>
-                </div>
-            </div>
-              
+                  </Field> -->
+                  
+                  <div class="field col-12 mb-3">
+                
+                                <label for="Departments" class="mb-1">Departments</label> <br>
+                                <div  >
+                                  <!-- <va-select class="mb-6" text-by="departmentName"  value-by="DepartmentId"  v-model="value" :options="options" /> -->
+                                  <va-select v-model="Employee.departmentId"  text-by="departmentName"  value-by="departmentId" max-height="150px"   :options="departmentDDL" />
+                                </div>
+                                <template>
+                                  <!-- <Dropdown required="true"  :class="{'p-invalid': submitted && !Employee.EmployeeName}"   id="Departments" v-model="Employee.Department" :options="departmentDDL" optionLabel="departmentName" placeholder="Select Department">
+                                  </Dropdown> -->
+                                </template>
+                    <!-- <small class="p-error" v-if="submitted && !Employee.department">Department is required.</small> -->
+                              </div>
+                  <div class="field col-12 mb-3">
+                      <label for="icon" class="mb-1">Joining Date</label>
+                      <va-date-input v-model="Employee.dateOfJoining" />
+                      <!-- <Calendar  appendTo="body"  autofocus :class="{'p-invalid': submitted && !Employee.DateOfJoining}" inputId="icon" v-model="Employee.DateOfJoining" :showIcon="true" /> -->
+                      <!-- <small class="p-error" v-if="submitted && !Employee.dateOfJoining">Joining Date is required.</small> -->
+                  </div>
+                  <div class="field col-12 ">
+                      <label class="mb-3">Gender</label>
+                      <div class="formgrid grid">
+                          <div class="field-radiobutton col-6">
+                              <RadioButton id="category1" name="Male" value="Male" v-model="Employee.gender" />
+                              <label for="category1">Male</label>
+                          </div>
+                          <div class="field-radiobutton col-6 mt-1">
+                              <RadioButton id="category2" name="Female" value="Female" v-model="Employee.gender" />
+                              <label for="category2">Female</label>
+                          </div>
 
-              <template #footer>
-                <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="closeModal"/>
-                <Button label="Save" icon="pi pi-check" class="p-button-text" @click="saveProduct" />
-              </template>
-              
+                          <!-- <small class="p-error" v-if="submitted && !Employee.Gender">Gender is required.</small> -->
+                      </div>
+                  </div>
+                            </div>
+                
+                <template #footer>
+                  <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="closeEmployeeModal"/>
+                  <Button label="Save" icon="pi pi-check" class="p-button-text" @click="saveProduct" />
+                </template>
+              </Form>   
         </Dialog>
+<!--Employee Form End-->
+
+<!-- Delete Dialog Start -->
+        <Dialog v-model:visible="deleteEmployeeDialog" :style="{width: '450px'}" header="Confirm" :modal="true">
+            <div class="confirmation-content">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+                <span v-if="Employee">Are you sure you want to Employee <b>{{Employee.employeeName}}</b>?</span>
+            </div>
+            <template #footer>
+                <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteEmployeeDialog = false"/>
+                <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="DeleteEmployee()" />
+            </template>
+        </Dialog>
+<!-- Delete Dialog End -->
 
         <template>
           <Toast />
@@ -71,6 +108,8 @@
 </template>
 <script>
 import EmployeeService from '../Services/EmployeeService.js'
+import * as yup from 'yup';
+import { Field, Form, ErrorMessage } from 'vee-validate';
 
 export default {
   name: 'EmployeeComponent',
@@ -80,45 +119,120 @@ export default {
 
   data() {
 
-    
+    const schema = yup.object({
+      employeeName: yup.string().required().min(20),
+      dateOfJoining : yup.string().required(),
+      gender: yup.string().required(),
+      department:yup.string().required()
+    });
+
+    const options = [
+      {
+        departmentId: 'First',
+        departmentName: 'First'
+      },
+      {
+        departmentId: 'Second',
+        departmentName: 'Second'
+      },
+      {
+        text: 'Third',
+        textBy: 'Third'
+      },
+    ]
+
+
     const employees = []
     const departmentDDL = []
     return {
+      options,
       Employee: {},
       columns: null,
       employees,
       submitted: false,
       employeeService: null,
-      displayModal: false,
-      departmentDDL
+      employeeModal: false,
+      departmentDDL: [],
+      deleteEmployeeDialog: false,
+      employeeName,
+      schema
     }
   },
 
   methods: {
-    
-    openModal() {
+    confirmDeleteEmployee(employee) {
+      debugger
+      this.Employee = employee;
+      this.deleteEmployeeDialog = true;
+    },
+
+    DeleteEmployee() {
+      this.employeeService.DeleteEmployee(this.Employee.employeeId).then(response => {
+        this.deleteEmployeeDialog = false;
+        this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'Employee Deleted', life: 3000 });
+        this.getEmployees();
+      })
+        .catch(error => {
+
+        })
+
+    },
+    getEmployees() {
+      this.employeeService.getEmployees().then(response => {
+        this.employees = response.data;
+      });
+    },
+    openEmployeeModal() {
       this.getDepartmentsDDLlist();
       this.Employee = {};
-      this.displayModal = true;
+      this.employeeModal = true;
     },
-    getDepartmentsDDLlist(){
-      this.employeeService.getDepartments().then(response =>
-       {
+    getDepartmentsDDLlist() {
+      this.employeeService.getDepartments().then(response => {
+        debugger
         this.departmentDDL = response.data;
       })
     },
-    closeModal() {
-      this.displayModal = false;
+    closeEmployeeModal() {
+      this.employeeModal = false;
     },
 
-    saveProduct(){
-      this.$toast.add({severity:'success', summary: 'Successful', detail: 'Product Updated', life: 3000})
-    //   this.submitted = true;
-    //  this.displayModal = false;
+    saveProduct() {
 
-    //   console.log(this.Employee)
-    //   this.Employee = {};
+      if (this.Employee.employeeId == 0 || this.Employee.employeeId == undefined || this.Employee.employeeId == null) {
+        this.employeeService.CreateEmployee(this.Employee).then(response => {
+          debugger
+          this.closeEmployeeModal();
+          this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'Employee Added', life: 3000 })
+          this.getEmployees();
+        })
+          .catch(function (error) {
+            console.log(error);
+          });
+      } else {
+        this.employeeService.EditEmployee(this.Employee.employeeId, this.Employee).then(response => {
+          this.closeEmployeeModal();
+          this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'Employee Updated', life: 3000 })
+          this.getEmployees();
+        })
+      }
+
+
+
+      //   this.submitted = true;
+      //  this.employeeModal = false;
+
+      console.log(this.Employee)
+      //   this.Employee = {};
+    },
+
+    editEmployee(Employee) {
+      debugger
+      this.getDepartmentsDDLlist();
+      this.Employee = { ...Employee };
+      this.employeeModal = true;
     }
+
   },
 
   created() {
@@ -132,49 +246,57 @@ export default {
     ];
   },
 
+
+
   mounted() {
     this.employeeService.getEmployees().then(response => {
       this.employees = response.data;
-      console.log('employees', this.employees);
-
     });
   }
 }
 </script>
 <style lang="scss" scoped>
-.table-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+// .table-header {
+//     display: flex;
+//     align-items: center;
+//     justify-content: space-between;
 
-    @media screen and (max-width: 960px) {
-        align-items: start;
-	}
+//     @media screen and (max-width: 960px) {
+//         align-items: start;
+// 	}
+// }
+
+// .product-image {
+//     width: 50px;
+//     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+// }
+
+// .p-dialog .product-image {
+//     width: 50px;
+//     margin: 0 auto 2rem auto;
+//     display: block;
+// }
+
+// .confirmation-content {
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+// }
+// @media screen and (max-width: 960px) {
+// 	::v-deep(.p-toolbar) {
+// 		flex-wrap: wrap;
+
+// 		.p-button {
+//             margin-bottom: 0.25rem;
+//         }
+// 	}
+// }
+
+.ui-datepicker {
+  position: visible
 }
 
-.product-image {
-    width: 50px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-}
-
-.p-dialog .product-image {
-    width: 50px;
-    margin: 0 auto 2rem auto;
-    display: block;
-}
-
-.confirmation-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-@media screen and (max-width: 960px) {
-	::v-deep(.p-toolbar) {
-		flex-wrap: wrap;
-        
-		.p-button {
-            margin-bottom: 0.25rem;
-        }
-	}
+.va-dropdown {
+  width: 400px !important;
 }
 </style>

@@ -2,6 +2,7 @@ import axios from 'axios'
 
 
 
+
 export default class EmployeeService {
 
     async getEmployees() {
@@ -23,5 +24,9 @@ export default class EmployeeService {
 
     async getDepartments() {
         return await axios.get('https://localhost:7282/api/Departments');
+    }
+
+    async getCustomFieldJson() {
+        return await axios.get('FormCustomFields.json')
     }
 }

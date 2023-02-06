@@ -211,5 +211,5 @@ app.mount("#app");
 
 import 'jquery/dist/jquery.js'
 import 'bootstrap/dist/js/bootstrap.bundle.js'
-import { createVuestic } from 'vuestic-ui'
+import { createVuestic, VuesticComponents } from 'vuestic-ui'
 import 'vuestic-ui/css'
